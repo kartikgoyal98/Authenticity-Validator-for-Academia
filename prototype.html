@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticity Validator for Academia</title>
+    <!-- Chosen Palette: Warm Neutrals with a Trustworthy Blue Accent -->
+    <!-- Application Structure Plan: A top-to-bottom narrative structure was chosen to guide the user logically from understanding the problem to experiencing the solution. This flow (Hero -> Problem -> How It Works -> Interactive Tool -> Impact Dashboard) effectively communicates the value proposition before engaging the user with the core functionality, enhancing comprehension and impact. -->
+    <!-- Visualization & Content Choices: 
+        - Problem Section: Stat Cards -> Goal: Inform -> Justification: Quickly convey the scale of the problem with high-impact numbers.
+        - How It Works: Numbered Steps with Icons -> Goal: Organize -> Justification: Visually simplifies the complex backend process for easy user understanding.
+        - Interactive Tool: File Upload Simulation -> Goal: Engage -> Justification: Provides a hands-on experience of the core feature, making the solution tangible and memorable.
+        - Impact Dashboard: Bar Chart (Chart.js) & Animated Counters -> Goal: Inform/Change -> Justification: Visualizes the positive impact and trends over time, reinforcing the system's value using dynamic mock data.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfdfc;
+            color: #333;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+        }
+        .btn-primary {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .stat-card, .tool-card, .result-card {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover, .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        #drop-zone {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+        #drop-zone.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="py-4 px-6 md:px-12 border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                <span class="text-blue-600">Certi</span>Validate
+            </h1>
+            <nav class="hidden md:flex space-x-6 items-center">
+                <a href="#problem" class="text-gray-600 hover:text-blue-600 transition">The Problem</a>
+                <a href="#solution" class="text-gray-600 hover:text-blue-600 transition">How It Works</a>
+                <a href="#validator" class="text-gray-600 hover:text-blue-600 transition">Validator</a>
+                <a href="#impact" class="text-gray-600 hover:text-blue-600 transition">Impact</a>
+            </nav>
+            <a href="#validator" class="btn-primary bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg">Verify Now</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-gradient py-20 md:py-32">
+            <div class="container mx-auto text-center px-6">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-gray-800 leading-tight">Empowering Trust in Education</h2>
+                <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Our digital platform provides instant, secure, and reliable verification of academic credentials, combating fraud and upholding academic integrity across Jharkhand.</p>
+                <div class="mt-10">
+                    <a href="#validator" class="btn-primary bg-blue-600 text-white font-bold py-4 px-10 rounded-lg text-lg">Verify a Certificate Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Problem Section -->
+        <section id="problem" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-800">The Challenge of Forged Credentials</h3>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Manual verification is slow, unreliable, and cannot keep up with the scale of academic fraud. This erodes trust and devalues legitimate qualifications.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="stat-card bg-gray-50 p-8 rounded-xl">
+                        <div class="text-5xl font-extrabold text-blue-600">4-6</div>
+                        <p class="mt-2 text-lg font-semibold text-gray-700">Weeks</p>
+                        <p class="mt-2 text-gray-500">Average time for manual verification, causing critical delays for hiring and admissions.</p>
+                    </div>
+                    <div class="stat-card bg-gray-50 p-8 rounded-xl">
+                        <div class="text-5xl font-extrabold text-blue-600">75%</div>
+                        <p class="mt-2 text-lg font-semibold text-gray-700">Rise in Forgery</p>
+                        <p class="mt-2 text-gray-500">Estimated increase in document fraud with the rise of digital editing tools.</p>
+                    </div>
+                    <div class="stat-card bg-gray-50 p-8 rounded-xl">
+                        <div class="text-5xl font-extrabold text-blue-600">Millions</div>
+                        <p class="mt-2 text-lg font-semibold text-gray-700">In Economic Loss</p>
+                        <p class="mt-2 text-gray-500">The cost of bad hires and academic fraud to the state's economy and reputation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="solution" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-800">A Simple, Powerful Solution</h3>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Our four-step process makes verification fast, secure, and transparent for everyone.</p>
+                <div class="mt-12 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <div class="flex flex-col items-center p-4">
+                        <div class="flex items-center justify-center bg-blue-100 text-blue-600 w-16 h-16 rounded-full text-2xl font-bold">1</div>
+                        <h4 class="mt-4 font-semibold text-lg">Upload</h4>
+                        <p class="mt-2 text-gray-500 text-sm">Institutions securely upload academic records, creating a trusted data pool.</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <div class="flex items-center justify-center bg-blue-100 text-blue-600 w-16 h-16 rounded-full text-2xl font-bold">2</div>
+                        <h4 class="mt-4 font-semibold text-lg">Verify</h4>
+                        <p class="mt-2 text-gray-500 text-sm">Employers and agencies submit a certificate document via our secure portal.</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <div class="flex items-center justify-center bg-blue-100 text-blue-600 w-16 h-16 rounded-full text-2xl font-bold">3</div>
+                        <h4 class="mt-4 font-semibold text-lg">Automatch</h4>
+                        <p class="mt-2 text-gray-500 text-sm">Our AI-powered system uses OCR and Blockchain to find a match and detect fraud.</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <div class="flex items-center justify-center bg-blue-100 text-blue-600 w-16 h-16 rounded-full text-2xl font-bold">4</div>
+                        <h4 class="mt-4 font-semibold text-lg">Result</h4>
+                        <p class="mt-2 text-gray-500 text-sm">An instant, trustworthy result is generated, confirming authenticity.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Validator Tool -->
+        <section id="validator" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="tool-card bg-white p-8 md:p-12 rounded-2xl max-w-3xl mx-auto">
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 text-center">Interactive Certificate Validator</h3>
+                    <p class="mt-3 text-gray-600 text-center">Upload a sample certificate (PDF, JPG, PNG) to see our verification process in action.</p>
+                    
+                    <div id="drop-zone" class="mt-8 p-10 text-center rounded-lg cursor-pointer bg-gray-50">
+                        <input type="file" id="file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="flex flex-col items-center text-gray-500">
+                            <span class="text-4xl">📄</span>
+                            <p class="mt-2 font-semibold">Drag & Drop your file here</p>
+                            <p class="text-sm">or <span class="text-blue-600 font-semibold">click to browse</span></p>
+                            <p id="file-name" class="mt-2 text-sm text-gray-700 font-medium"></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button id="verify-btn" class="bg-blue-600 text-white font-bold py-3 px-12 rounded-lg w-full md:w-auto btn-primary disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none" disabled>Verify Certificate</button>
+                    </div>
+
+                    <div id="loading-spinner" class="hidden mt-8">
+                        <div class="flex items-center justify-center">
+                            <div class="loader"></div>
+                            <p id="loading-text" class="ml-4 text-gray-600 font-medium">Starting verification...</p>
+                        </div>
+                    </div>
+
+                    <div id="result-section" class="hidden mt-8"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Dashboard Section -->
+        <section id="impact" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-800">Measuring Our Impact</h3>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Our system provides valuable insights for authorities to track trends and uphold academic standards across the state.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                     <div class="stat-card bg-white p-8 rounded-xl text-left flex flex-col space-y-6">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Verifications This Year</p>
+                            <p id="total-verifications" class="text-4xl font-bold text-blue-600">0</p>
+                        </div>
+                         <div>
+                            <p class="text-gray-500 text-sm">Potential Forgeries Detected</p>
+                            <p id="forgeries-detected" class="text-4xl font-bold text-red-500">0</p>
+                        </div>
+                         <div>
+                            <p class="text-gray-500 text-sm">Average Verification Time</p>
+                            <p class="text-4xl font-bold text-green-500">&lt; 10 seconds</p>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-xl">
+                        <div class="chart-container">
+                            <canvas id="verificationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-xl"><span class="text-blue-400">Certi</span>Validate</p>
+            <p class="mt-2 text-gray-400">Empowering Trust in Education. A Smart India Hackathon Project.</p>
+            <p class="mt-4 text-sm text-gray-500">&copy; 2025 Team [Your Team Name]. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Interactive Validator Logic
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const fileNameDisplay = document.getElementById('file-name');
+            const verifyBtn = document.getElementById('verify-btn');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const loadingText = document.getElementById('loading-text');
+            const resultSection = document.getElementById('result-section');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateFileName();
+                }
+            });
+            fileInput.addEventListener('change', updateFileName);
+
+            function updateFileName() {
+                if (fileInput.files.length > 0) {
+                    fileNameDisplay.textContent = fileInput.files[0].name;
+                    verifyBtn.disabled = false;
+                } else {
+                    fileNameDisplay.textContent = '';
+                    verifyBtn.disabled = true;
+                }
+            }
+
+            verifyBtn.addEventListener('click', () => {
+                loadingSpinner.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                verifyBtn.disabled = true;
+                
+                const steps = [
+                    { text: 'Extracting data with OCR...', duration: 1500 },
+                    { text: 'Analyzing document structure with AI...', duration: 2000 },
+                    { text: 'Matching against verified database...', duration: 1500 },
+                    { text: 'Checking blockchain ledger for digital hash...', duration: 1000 },
+                    { text: 'Generating final report...', duration: 500 }
+                ];
+
+                let currentStep = 0;
+                function runStep() {
+                    if (currentStep < steps.length) {
+                        loadingText.textContent = steps[currentStep].text;
+                        setTimeout(runStep, steps[currentStep].duration);
+                        currentStep++;
+                    } else {
+                        displayResult();
+                    }
+                }
+                runStep();
+            });
+
+            function displayResult() {
+                loadingSpinner.classList.add('hidden');
+                resultSection.classList.remove('hidden');
+                verifyBtn.disabled = false;
+                fileInput.value = '';
+                fileNameDisplay.textContent = '';
+
+                const isVerified = Math.random() > 0.3; // 70% chance of being verified
+
+                const mockData = {
+                    name: 'Rohan Sharma',
+                    degree: 'Bachelor of Technology',
+                    institution: 'Jharkhand University of Technology',
+                    year: '2024',
+                    rollNo: `JUT${Math.floor(10000 + Math.random() * 90000)}`,
+                    certificateId: `CERT${Math.floor(100000 + Math.random() * 900000)}`,
+                };
+                
+                if (!isVerified) {
+                    const errors = ['Signature mismatch detected', 'Grade appears to be tampered', 'Invalid certificate ID format'];
+                    mockData.error = errors[Math.floor(Math.random() * errors.length)];
+                }
+
+                resultSection.innerHTML = `
+                    <div class="result-card p-6 rounded-lg ${isVerified ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center ${isVerified ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                                <span class="text-2xl">${isVerified ? '✓' : '✗'}</span>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-xl ${isVerified ? 'text-green-800' : 'text-red-800'}">${isVerified ? 'Certificate Verified' : 'Forgery Alert'}</h4>
+                                <p class="text-sm ${isVerified ? 'text-green-600' : 'text-red-600'}">${isVerified ? 'The academic credential is authentic and matches our records.' : `Potential forgery detected: ${mockData.error}`}</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 border-t ${isVerified ? 'border-green-200' : 'border-red-200'} pt-4 grid grid-cols-2 gap-4 text-sm">
+                            <div><strong class="text-gray-600">Name:</strong> <span class="text-gray-800">${mockData.name}</span></div>
+                            <div><strong class="text-gray-600">Roll No:</strong> <span class="text-gray-800">${mockData.rollNo}</span></div>
+                            <div><strong class="text-gray-600">Degree:</strong> <span class="text-gray-800">${mockData.degree}</span></div>
+                            <div><strong class="text-gray-600">Institution:</strong> <span class="text-gray-800">${mockData.institution}</span></div>
+                            <div><strong class="text-gray-600">Year:</strong> <span class="text-gray-800">${mockData.year}</span></div>
+                            <div><strong class="text-gray-600">Certificate ID:</strong> <span class="text-gray-800">${mockData.certificateId}</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Chart.js and Counter Logic
+            const totalVerificationsEl = document.getElementById('total-verifications');
+            const forgeriesDetectedEl = document.getElementById('forgeries-detected');
+            
+            function animateValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            animateValue(totalVerificationsEl, 0, 8743, 2000);
+            animateValue(forgeriesDetectedEl, 0, 219, 2000);
+            
+            const ctx = document.getElementById('verificationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                    datasets: [{
+                        label: 'Verifications',
+                        data: [650, 590, 800, 810, 960, 1050, 1100, 1290],
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'Forgeries Detected',
+                        data: [12, 19, 25, 22, 31, 28, 40, 42],
+                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Monthly Verification & Forgery Trends (Mock Data)'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
