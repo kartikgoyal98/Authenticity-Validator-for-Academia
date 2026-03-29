@@ -1,1 +1,0 @@
-# Authenticity-Validator-for-Academia
